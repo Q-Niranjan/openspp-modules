@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 
 
 @tagged("post_install", "-at_install")
-class EventSchoolAttendanceRecord(TransactionCase):
+class EventSchoolAttendanceRecordTest(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super(EventSchoolAttendanceRecordTest, cls).setUpClass()
@@ -52,7 +52,9 @@ class EventSchoolAttendanceRecord(TransactionCase):
             "attendance_description": "Enrolled in university",
             "date": "2028-10-24",
         }
-        school_attendance_report_2 = self.env["spp.event.schoolattendance.record"].create(vals_school)
+        school_attendance_report_2 = self.env[
+            "spp.event.schoolattendance.record"
+        ].create(vals_school)
 
         vals_event_data = {
             "partner_id": self.person_1.id,

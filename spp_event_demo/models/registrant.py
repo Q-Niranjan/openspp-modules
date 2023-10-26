@@ -39,4 +39,6 @@ class OpenSPPRegistrant(models.Model):
         This computes the active school attendance record of the registrant
         """
         for rec in self:
-            rec.active_school_attendance_record = rec._get_active_event_id("spp.event.schoolattendance.record")
+            rec.active_school_attendance_record = rec._get_active_event_id(
+                "spp.event.schoolattendance.record"
+            )

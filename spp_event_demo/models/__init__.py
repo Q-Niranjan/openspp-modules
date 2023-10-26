@@ -2,4 +2,5 @@
 
 from . import house_visit
 from . import phone_survey
+from . import school_attendance
 from . import registrant
