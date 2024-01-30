@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="view_geoenging_groups_form" model="ir.ui.view">
+        <field name="name">view_geoenging_groups_form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="g2p_registry_group.view_groups_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='other']" position="after">
+                <page string="The Point" name="the_point">
+                    <field name="geo_point" />
+                </page>
+                <page string="The Line" name="the_line">
+                    <field name="geo_line" />
+                </page>
+                <page string="The Multipolygon" name="the_multipolygon">
+                    <field name="geo_multipolygon" />
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
