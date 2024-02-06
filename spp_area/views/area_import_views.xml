@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <form string="Area Import">
                 <field name="locked" invisible="True" />
-                <header attrs="{'invisible': [('locked', '=', True)]}">
+                <header invisible="locked">
                     <button
                         name="import_data"
                         type="object"
@@ -35,7 +35,7 @@
                         type="object"
                         string="Reset to Uploaded"
                         class="btn-primary"
-                        states="Imported,Validated"
+                        invisible="state not in ('Imported', 'Validated')"
                     />
                     <button
                         name="cancel_import"
@@ -53,7 +53,7 @@
                 <div
                     class="alert alert-warning text-center o_form_header"
                     role="status"
-                    attrs="{'invisible': [('locked', '!=', True)]}"
+                    invisible="not locked"
                 >
                     <span>Warning: Operation in progress: </span>
                     <field name="locked_reason" class="o_stat_value" />

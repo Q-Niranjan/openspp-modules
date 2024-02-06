@@ -35,6 +35,14 @@ class OpenSPPArea(models.Model):
     kind = fields.Many2one("spp.area.kind")
     area_sqkm = fields.Float("Area (sq/km)")
 
+    _sql_constraints = [
+        (
+            "code_unique",
+            "unique (code)",
+            "Code is already exists!",
+        )
+    ]
+
     @api.depends("draft_name", "code")
     def _compute_name(self):
         """

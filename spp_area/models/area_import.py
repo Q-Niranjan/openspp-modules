@@ -95,13 +95,12 @@ class OpenSPPAreaImport(models.Model):
         for rec in self:
             tot_rows_imported = len(rec.raw_data_ids)
             tot_rows_error = self.env["spp.area.import.raw"].search(
-                [("id", "in", rec.raw_data_ids.ids), ("state", "=", "Error")],
-                count=True,
+                [("id", "in", rec.raw_data_ids.ids), ("state", "=", "Error")]
             )
             rec.update(
                 {
                     "tot_rows_imported": tot_rows_imported,
-                    "tot_rows_error": tot_rows_error,
+                    "tot_rows_error": len(tot_rows_error),
                 }
             )
 
@@ -156,11 +155,12 @@ class OpenSPPAreaImport(models.Model):
                 # get column list of sheet
                 columns = sheet.row_values(0)
 
-                # Get Column name to be used as name field in the area
-                name_header = columns[0]
-
                 # Get column prefix and the language iso code used in the name header
-                column_name_prefix, name_iso_code = name_header.split("_")
+                name_iso_code = columns[0].split("_")[1]
+                column_name_prefix = f"ADM{area_level}"
+
+                # Get Column name to be used as name field in the area
+                name_header = f"{column_name_prefix}_{name_iso_code}"
 
                 # Get Column name to be used as code field in the area
                 code_header = f"{column_name_prefix}_PCODE"
@@ -184,7 +184,9 @@ class OpenSPPAreaImport(models.Model):
                     parent_code_index = columns.index(parent_code_header)
 
                 # Get area_sqkm column index
-                area_sqkm_index = columns.index("AREA_SQKM")
+                area_sqkm_index = None
+                if "AREA_SQKM" in columns:
+                    area_sqkm_index = columns.index("AREA_SQKM")
 
                 # Get the required values for area in each row
                 for row in range(1, sheet.nrows):
@@ -194,9 +196,14 @@ class OpenSPPAreaImport(models.Model):
                         "parent_name": "",
                         "parent_code": "",
                         "level": area_level,
-                        "area_sqkm": sheet.cell(row, area_sqkm_index).value,
                     }
-                    if parent_name_index and parent_code_index:
+                    if area_sqkm_index:
+                        vals.update(
+                            {
+                                "area_sqkm": sheet.cell(row, area_sqkm_index).value,
+                            }
+                        )
+                    if parent_name_index is not None and parent_code_index is not None:
                         vals.update(
                             {
                                 "parent_name": sheet.cell(row, parent_name_index).value,
@@ -448,9 +455,7 @@ class OpenSPPAreaImportActivities(models.Model):
                 "code": rec.admin_code,
                 "area_sqkm": area_sqkm,
             }
-            if area_id := self.env["spp.area"].search(
-                [("draft_name", "=", rec.admin_name), ("code", "=", rec.admin_code)]
-            ):
+            if area_id := self.env["spp.area"].search([("code", "=", rec.admin_code)]):
                 state = self.UPDATED
                 area_id.update(area_vals)
             else:
